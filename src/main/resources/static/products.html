@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Our Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: url('https://upload.wikimedia.org/wikipedia/commons/5/5c/Incognito_Icon.svg') no-repeat center center fixed;
+      background-size: 200px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: -1;
+    }
+
+    .product-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 1rem;
+      color: #000;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.35);
+    }
+    .product-img {
+      height: 180px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .navbar {
+      background: rgba(0,0,0,0.9);
+    }
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff !important;
+    }
+    .navbar-nav .nav-link {
+      color: #ddd !important;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #fff !important;
+    }
+    .search-bar {
+      width: 300px;
+    }
+
+    /* Attractive Add to Cart Button */
+    .cart-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      padding: 10px 16px;
+      border-radius: 50px;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+    }
+    .cart-btn:hover {
+      background: linear-gradient(135deg, #ff5722, #e91e63);
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(255, 87, 34, 0.5);
+    }
+    .cart-btn i {
+      font-size: 18px;
+    }
+  </style>
+  <!-- FontAwesome for cart icon -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">🕶️ Plipkart</a>
+    <div class="collapse navbar-collapse">
+      <form class="d-flex ms-auto me-3">
+        <input class="form-control search-bar" id="searchBar" type="search" placeholder="🔍 Search products...">
+      </form>
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item me-3">
+          <a class="nav-link" href="cart.html">🛒 Cart (<span id="cartCount">0</span>)</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">👤 Account</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Product Container -->
+<div class="container py-4">
+  <div class="row g-3" id="productList">
+    <!-- Products injected by JS -->
+  </div>
+</div>
+
+<script>
+  const products = [
+    {name: "Mohammed Imran N", price: 1499, mrp: 2999, img: "Imran.jpg"},
+    {name: "Nishall BE", price: 2499, mrp: 3999, img: "Nishall.jpg"},
+    {name: "Samuel Smart S", price: 3999, mrp: 5999, img: "smart.jpg"},
+    {name: "Niresh A", price: 1199, mrp: 2499, img: "Niresh.jpg"},
+    {name: "Madhanraj", price: 799, mrp: 1599, img: "Madhan.jpg"},
+    {name: "Rajavel M", price: 1999, mrp: 3499, img: "raju.jpg"},
+    {name: "Praveen G", price: 25999, mrp: 32999, img: "Praveen.jpg"},
+    {name: "Sandha Ruban", price: 999, mrp: 1799, img: "Sandha.jpg"},
+    {name: "Ram Kumar K", price: 2999, mrp: 4999, img: "Ram.jpg"},
+  ];
+
+  const productList = document.getElementById("productList");
+  const cartCount = document.getElementById("cartCount");
+
+  function loadProducts(list) {
+    productList.innerHTML = "";
+    list.forEach((p, index) => {
+      productList.innerHTML += `
+        <div class="col-6 col-md-3">
+          <div class="product-card text-center">
+            <img src="${p.img}" alt="${p.name}" class="product-img mb-2 w-100">
+            <h6>${p.name}</h6>
+            <p><span class="text-muted text-decoration-line-through">₹${p.mrp}</span> 
+            <span class="fw-bold text-success">₹${p.price}</span></p>
+            <button class="cart-btn" onclick="addToCart(${index})">
+              <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function addToCart(index) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push(products[index]);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    alert(products[index].name + " added to cart!");
+  }
+
+  function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cartCount.innerText = cart.length;
+  }
+
+  loadProducts(products);
+  updateCartCount();
+
+  // Search Filter
+  document.getElementById("searchBar").addEventListener("input", (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+    loadProducts(filtered);
+  });
+</script>
+</body>
+</html>
